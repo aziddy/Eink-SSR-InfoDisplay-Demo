@@ -145,3 +145,4 @@ dist
 
 # Project
 src/config.h
+include/config.h

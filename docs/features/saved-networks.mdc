@@ -1,0 +1,20 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+I wanna make a new feature save/get networks creds 
+
+There will be multiple network creds stored 
+
+use preferences library to save / get stored networks creds
+
+I want the namespace = SavedNetworks
+
+Saved network name/SSID's need to be directly accessed and or iterable over all 
+
+
+Immediately Relevant Files 
+- [WIFIManagerUtil.cpp](mdc:src/util/WIFIManagerUtil/WIFIManagerUtil.cpp)
+- [WIFIManagerUtil.h](mdc:include/WIFIManagerUtil.h)
