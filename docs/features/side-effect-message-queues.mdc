@@ -1,0 +1,11 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+
+
+Make code decoupled message queues to handle side effects 
+
+Use FreeRTOS to handle side effects via its Message Queue functions
+- `xQueueReceive`, `xQueueSend`, `xQueueCreate`

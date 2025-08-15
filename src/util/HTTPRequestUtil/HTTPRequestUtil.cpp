@@ -165,7 +165,6 @@ WiFiClient *HTTPRequestUtil::checkIfHttps(String url)
     return client;
 }
 
-// ... existing code ...
 
 String HTTPRequestUtil::buildUrlWithParams(const String &baseUrl, const std::map<String, String> &params)
 {
@@ -228,12 +227,49 @@ void HTTPRequestUtil::httpGetReqFixedBufferResponse(String url, int maxTimeOut, 
     // Get the response stream
     WiFiClient *stream = http.getStreamPtr();
     int bytesRead = 0;
+    unsigned long startTime = millis();
+    const unsigned long readTimeout = 30000; // 30 second timeout for reading
 
-    // Read data while available
-    while (stream->available())
+    Serial.println("Starting to read response...");
+
+    // Read data with timeout and buffer protection
+    while (bytesRead < expectedPayloadSize && (millis() - startTime) < readTimeout)
     {
-        buffer[bytesRead] = stream->read();
-        bytesRead++;
+
+        // If we rely on the stream->available() to device the end of the response,
+        // we will run a buffer underrun if CPU polls faster than the stream.
+        // making it unavailable and therefore stop even though there are more bytes
+        if (stream->available())
+        {
+            buffer[bytesRead] = stream->read();
+            bytesRead++;
+
+            // Print progress every 1000 bytes
+            if (bytesRead % 1000 == 0)
+            {
+                Serial.print("Read ");
+                Serial.print(bytesRead);
+                Serial.print(" of ");
+                Serial.print(expectedPayloadSize);
+                Serial.println(" bytes");
+            }
+        }
+        else
+        {
+            // Small delay to prevent busy waiting
+            delay(10);
+        }
+    }
+
+    Serial.print("Final Bytes Read: ");
+    Serial.println(bytesRead);
+
+    if (bytesRead < expectedPayloadSize)
+    {
+        Serial.print("WARNING: Incomplete read. Expected: ");
+        Serial.print(expectedPayloadSize);
+        Serial.print(", Got: ");
+        Serial.println(bytesRead);
     }
 
     http.end();
